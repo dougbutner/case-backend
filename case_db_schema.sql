@@ -4,6 +4,7 @@ CREATE TABLE cases (
     title VARCHAR(255) NOT NULL, -- Title of the case
     short_description TEXT NOT NULL, -- Short Description of the case
     description TEXT NOT NULL, -- Description of the case
+    case_wallet_address VARCHAR(255) NOT NULL,
     request_damage_amount DECIMAL(15, 2) NOT NULL, -- Total amount of damages requested
     minimum_damage_amount DECIMAL(15, 2) NOT NULL, -- Minimum acceptable damage amount
     lawyer_fee DECIMAL(15, 2) NOT NULL, -- Minimum amount for the lawyer to take the case
@@ -21,6 +22,7 @@ CREATE TABLE lawyers (
     is_case_lawyer BOOLEAN NOT NULL DEFAULT TRUE, -- Indicates if the lawyer is handling the case
     cases_won INT DEFAULT 0, -- Total number of cases won by the lawyer
     cases_lost INT DEFAULT 0 -- Total number of cases lost by the lawyer
+    lawyer_wallet_address VARCHAR(255) NOT NULL,
 ) ENGINE=InnoDB;
 
 -- 3. investors table
@@ -28,6 +30,7 @@ CREATE TABLE investors (
     investor_id INT PRIMARY KEY AUTO_INCREMENT, -- Unique identifier for each investor
     investor_kyc_id VARCHAR(255) NOT NULL, -- KYC (Know Your Customer) identifier
     investor_kyc_provider VARCHAR(255) NOT NULL -- KYC provider
+    investor_wallet_address VARCHAR(255) NOT NULL,
 ) ENGINE=InnoDB;
 
 -- 4. investments table
@@ -35,15 +38,14 @@ CREATE TABLE investments (
     investment_id INT PRIMARY KEY AUTO_INCREMENT, -- Unique identifier for each investment
     investor_id INT, -- Foreign key linking to the investors table
     case_id INT, -- Foreign key linking to the cases table
-    wallet_address VARCHAR(255) NOT NULL, -- Investor's cryptocurrency wallet address
-    amount_invested DECIMAL(15, 2) NOT NULL, -- Amount invested by the investor
+    amount_invested DECIMAL(18, 8) NOT NULL, -- Amount invested by the investor
     investment_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the investment was made
     FOREIGN KEY (investor_id) REFERENCES investors(investor_id), -- Foreign key constraint to investors
     FOREIGN KEY (case_id) REFERENCES cases(case_id) -- Foreign key constraint to cases
 ) ENGINE=InnoDB;
 
 -- 5. case_damages table
-CREATE TABLE case_damages (
+CREATE TABLE case_damages_distribution (
     case_id INT PRIMARY KEY, -- Foreign key linking to the cases table
     distribution_to_winners DECIMAL(5, 2) DEFAULT 50.00, -- Percentage distributed to winners
     distribution_to_investors DECIMAL(5, 2) DEFAULT 25.00, -- Percentage distributed to investors
@@ -73,7 +75,7 @@ CREATE TABLE damages (
 CREATE TABLE transactions (
     transaction_id_internal INT PRIMARY KEY AUTO_INCREMENT, -- Unique identifier for each transaction
     case_id INT, -- Foreign key linking to the cases table
-    payment_type ENUM('Investor Payment', 'Lawyer Fee', 'Project Payout') NOT NULL, -- Type of payment
+    payment_type ENUM('Investor Payment', 'Lawyer Fee', 'Project Payout', 'Winner Payout') NOT NULL, -- Type of payment
     recipient_address VARCHAR(255) NOT NULL, -- Address receiving the payment (linked to investors)
     transaction_id_onchain VARCHAR(255) NOT NULL, -- Blockchain transaction hash for verification
     amount DECIMAL(15, 2) NOT NULL, -- Amount transferred in the transaction
