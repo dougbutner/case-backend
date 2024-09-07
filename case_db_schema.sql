@@ -11,7 +11,7 @@ CREATE TABLE cases (
     lawyer_id INT, -- Foreign key linking to the lawyer handling the case
     status ENUM('Open', 'Closed', 'In Progress', 'Under Review', 'Won', 'Lost', 'Settled') NOT NULL, -- Current status of the case
     winning_prediction_probability DECIMAL(5, 2), -- Expected probability of winning (optional)
-    funding_amount_progress DECIMAL(5, 2) DEFAULT 0.00, -- Percentage of funding goal reached
+    funding_amount_progress DECIMAL(15, 2) DEFAULT 0.00, -- Percentage of funding goal reached
     final_winning_amount DECIMAL(15, 2), -- Actual amount awarded if case is won
     FOREIGN KEY (lawyer_id) REFERENCES lawyers(lawyer_id) -- Foreign key constraint to lawyers
 ) ENGINE=InnoDB;
