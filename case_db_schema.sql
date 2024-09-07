@@ -2,6 +2,7 @@
 CREATE TABLE cases (
     case_id INT PRIMARY KEY AUTO_INCREMENT, -- Unique identifier for each case
     title VARCHAR(255) NOT NULL, -- Title of the case
+    short_description TEXT NOT NULL, -- Short Description of the case
     description TEXT NOT NULL, -- Description of the case
     request_damage_amount DECIMAL(15, 2) NOT NULL, -- Total amount of damages requested
     minimum_damage_amount DECIMAL(15, 2) NOT NULL, -- Minimum acceptable damage amount
