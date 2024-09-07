@@ -1,0 +1,21 @@
+{
+  "name": "case-backend",
+  "version": "1.0.0",
+  "description": "Backend the cases to allow user request data",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "author": "Legal Group",
+  "license": "MIT"
+}
