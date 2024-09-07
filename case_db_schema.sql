@@ -12,8 +12,7 @@ CREATE TABLE cases (
     status ENUM('Open', 'Closed', 'In Progress', 'Under Review', 'Won', 'Lost', 'Settled') NOT NULL, -- Current status of the case
     winning_prediction_probability DECIMAL(5, 2), -- Expected probability of winning (optional)
     funding_amount_progress DECIMAL(15, 2) DEFAULT 0.00, -- Percentage of funding goal reached
-    final_winning_amount DECIMAL(15, 2), -- Actual amount awarded if case is won
-    FOREIGN KEY (lawyer_id) REFERENCES lawyers(lawyer_id) -- Foreign key constraint to lawyers
+    final_winning_amount DECIMAL(15, 2) -- Actual amount awarded if case is won
 ) ENGINE=InnoDB;
 
 -- 2. lawyers table
@@ -21,16 +20,19 @@ CREATE TABLE lawyers (
     lawyer_id INT PRIMARY KEY AUTO_INCREMENT, -- Unique identifier for each lawyer
     is_case_lawyer BOOLEAN NOT NULL DEFAULT TRUE, -- Indicates if the lawyer is handling the case
     cases_won INT DEFAULT 0, -- Total number of cases won by the lawyer
-    cases_lost INT DEFAULT 0 -- Total number of cases lost by the lawyer
-    lawyer_wallet_address VARCHAR(255) NOT NULL,
+    cases_lost INT DEFAULT 0, -- Total number of cases lost by the lawyer
+    lawyer_wallet_address VARCHAR(255) NOT NULL
 ) ENGINE=InnoDB;
 
 -- 3. investors table
 CREATE TABLE investors (
     investor_id INT PRIMARY KEY AUTO_INCREMENT, -- Unique identifier for each investor
     investor_kyc_id VARCHAR(255) NOT NULL, -- KYC (Know Your Customer) identifier
-    investor_kyc_provider VARCHAR(255) NOT NULL -- KYC provider
+    investor_kyc_provider VARCHAR(255) NOT NULL, -- KYC provider
     investor_wallet_address VARCHAR(255) NOT NULL,
+    nickname VARCHAR(64), 
+	phone VARCHAR(15), 
+	email VARCHAR(64)
 ) ENGINE=InnoDB;
 
 -- 4. investments table
@@ -40,8 +42,6 @@ CREATE TABLE investments (
     case_id INT, -- Foreign key linking to the cases table
     amount_invested DECIMAL(18, 8) NOT NULL, -- Amount invested by the investor
     investment_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the investment was made
-    FOREIGN KEY (investor_id) REFERENCES investors(investor_id), -- Foreign key constraint to investors
-    FOREIGN KEY (case_id) REFERENCES cases(case_id) -- Foreign key constraint to cases
 ) ENGINE=InnoDB;
 
 -- 5. case_damages table
@@ -50,16 +50,14 @@ CREATE TABLE case_damages_distribution (
     distribution_to_winners DECIMAL(5, 2) DEFAULT 50.00, -- Percentage distributed to winners
     distribution_to_investors DECIMAL(5, 2) DEFAULT 25.00, -- Percentage distributed to investors
     distribution_to_project DECIMAL(5, 2) DEFAULT 25.00, -- Percentage distributed to the project
-    distribution_to_lawyer DECIMAL(5, 2), -- Percentage distributed to the lawyer
-    FOREIGN KEY (case_id) REFERENCES cases(case_id) -- Foreign key constraint to cases
+    distribution_to_lawyer DECIMAL(5, 2) -- Percentage distributed to the lawyer
 ) ENGINE=InnoDB;
 
 -- 6. proofs table
 CREATE TABLE proofs (
     proof_id INT PRIMARY KEY AUTO_INCREMENT, -- Unique identifier for each proof
     case_id INT, -- Foreign key linking to the cases table
-    proof_text TEXT NOT NULL, -- Text field containing the proof details
-    FOREIGN KEY (case_id) REFERENCES cases(case_id) -- Foreign key constraint to cases
+    proof_text TEXT NOT NULL -- Text field containing the proof details
 ) ENGINE=InnoDB;
 
 -- 7. damages table
@@ -67,8 +65,7 @@ CREATE TABLE damages (
     damage_id INT PRIMARY KEY AUTO_INCREMENT, -- Unique identifier for each damage record
     case_id INT, -- Foreign key linking to the cases table
     damage_description TEXT NOT NULL, -- Description of the damages claimed
-    damage_amount DECIMAL(15, 2) NOT NULL, -- Specific amount of damages being requested
-    FOREIGN KEY (case_id) REFERENCES cases(case_id) -- Foreign key constraint to cases
+    damage_amount DECIMAL(15, 2) NOT NULL -- Specific amount of damages being requested
 ) ENGINE=InnoDB;
 
 -- 8. transactions table
@@ -78,6 +75,5 @@ CREATE TABLE transactions (
     payment_type ENUM('Investor Payment', 'Lawyer Fee', 'Project Payout', 'Winner Payout') NOT NULL, -- Type of payment
     recipient_address VARCHAR(255) NOT NULL, -- Address receiving the payment (linked to investors)
     transaction_id_onchain VARCHAR(255) NOT NULL, -- Blockchain transaction hash for verification
-    amount DECIMAL(15, 2) NOT NULL, -- Amount transferred in the transaction
-    FOREIGN KEY (case_id) REFERENCES cases(case_id) -- Foreign key constraint to cases
+    amount DECIMAL(15, 2) NOT NULL -- Amount transferred in the transaction
 ) ENGINE=InnoDB;
