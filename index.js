@@ -121,6 +121,27 @@ app.get("/investors/:id/verified", async (req, res) => {
 
 // ... existing error handling middleware ...
 
+// Get investors by case ID
+app.get("/cases/:id/investors", async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT i.investor_id, i.investor_kyc_id, i.investor_wallet_address, i.nickname, i.email, 
+             inv.amount_invested, inv.investment_timestamp
+      FROM investors i
+      JOIN investments inv ON i.investor_id = inv.investor_id
+      WHERE inv.case_id = ?
+    `, [req.params.id]);
+    
+    if (rows.length > 0) {
+      res.json(rows);
+    } else {
+      res.status(404).json({ error: "No investors found for this case" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is listening on http://localhost:${PORT}`);
