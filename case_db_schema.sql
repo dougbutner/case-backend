@@ -41,7 +41,7 @@ CREATE TABLE investments (
     investor_id INT, -- Foreign key linking to the investors table
     case_id INT, -- Foreign key linking to the cases table
     amount_invested DECIMAL(18, 8) NOT NULL, -- Amount invested by the investor
-    investment_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the investment was made
+    investment_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Timestamp when the investment was made
 ) ENGINE=InnoDB;
 
 -- 5. case_damages table

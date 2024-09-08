@@ -70,7 +70,11 @@ app.get("/cases/:id", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM cases WHERE case_id = ?", [req.params.id]);
     if (rows.length > 0) {
-      res.json(rows[0]);
+      const caseWithImage = {
+        ...rows[0],
+        image_address: `assets/casos/caso${rows[0].case_id}.jpeg`
+      };
+      res.json(caseWithImage);
     } else {
       res.status(404).json({ error: "Case not found" });
     }
@@ -83,7 +87,11 @@ app.get("/cases/:id", async (req, res) => {
 app.get("/cases", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM cases");
-    res.json(rows);
+    const casesWithImages = rows.map(caseItem => ({
+      ...caseItem,
+      image_address: `assets/casos/caso${caseItem.case_id}.jpeg`
+    }));
+    res.json(casesWithImages);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
